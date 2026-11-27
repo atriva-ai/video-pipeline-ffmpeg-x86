@@ -104,28 +104,8 @@ AI inference containers can directly access decoded frames from the shared volum
 - Direct file access
 - Efficient for high-throughput scenarios
 
-**Implementation Example:**
-```python
-# ai-inference-container code
-from pathlib import Path
-import cv2
-
-FRAMES_DIR = Path("/shared/frames")  # Mounted shared volume
-
-def get_latest_frame(camera_id: str):
-    """Get the latest frame for a camera from shared storage"""
-    camera_dir = FRAMES_DIR / camera_id
-    if not camera_dir.exists():
-        return None
-    
-    # Find latest frame by modification time
-    jpg_files = list(camera_dir.glob("*.jpg"))
-    if not jpg_files:
-        return None
-    
-    latest = max(jpg_files, key=lambda f: f.stat().st_mtime)
-    return cv2.imread(str(latest))
-```
+See the [shared frame volume guide](../shared-volume.md) for a reader that
+handles files being replaced while inference is polling.
 
 ## API Reference
 
@@ -241,49 +221,8 @@ Check service health status.
 
 ## Shared Storage Integration
 
-### Volume Structure
-
-The shared volume follows this structure:
-
-```
-/shared/frames/              # Mount point (configurable)
-├── {camera_id_1}/
-│   ├── frame_0001.jpg
-│   ├── frame_0002.jpg
-│   ├── frame_0003.jpg
-│   └── ...
-├── {camera_id_2}/
-│   ├── frame_0001.jpg
-│   └── ...
-└── ...
-```
-
-### Frame Naming Convention
-
-Frames are named sequentially: `frame_%04d.jpg` (e.g., `frame_0001.jpg`, `frame_0002.jpg`)
-
-### Accessing Frames in AI Inference Containers
-
-1. **Mount the shared volume** in your Docker Compose or Kubernetes deployment
-2. **Read frames directly** from the filesystem
-3. **Monitor frame updates** by checking file modification times
-
-**Docker Compose Example:**
-```yaml
-services:
-  video-pipeline:
-    volumes:
-      - shared-frames:/app/frames
-  
-  ai-inference:
-    volumes:
-      - shared-frames:/shared/frames  # Same volume, different mount point
-    depends_on:
-      - video-pipeline
-
-volumes:
-  shared-frames:
-```
+The [shared frame volume guide](../shared-volume.md) is the reference for
+mount points, frame naming, and cleanup.
 
 ## Configuration
 
