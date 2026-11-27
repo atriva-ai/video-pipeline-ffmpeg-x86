@@ -90,7 +90,7 @@ Decoded frames are stored in a shared volume structure:
 └── ...
 ```
 
-This structure allows AI inference containers to access frames directly from the shared volume without requiring API calls.
+See the [shared frame volume guide](./docs/shared-volume.md) for the Compose mounts, reader example, and cleanup rules.
 
 ## License
 
